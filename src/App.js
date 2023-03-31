@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+const API_URL = "http://localhost:3002/index.php";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+function App()
+  const [items, setItems] = React.useState([]);
+  const [newItem, setNewItem] = React.useState("");
+  const [newAmount, setNewAmount] = React.useState(1);
 
-export default App;
+  React.useEffect(() => {
+    fetch(API_URL)
+      .then(response => response.json())
+      .then(data => setItems(data));
+  }, []);
+
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = { description: newItem, amount: newAmount };
+    fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(data => {
+        setItems([...items, data]);
+        setNewItem("");
+        setNewAmount(1);
+      });
+  }
